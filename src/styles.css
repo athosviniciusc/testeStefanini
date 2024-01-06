@@ -1,0 +1,10 @@
+/* You can add global styles to this file, and also import other style files */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+.container{
+    padding-left: 12rem;
+    padding-right: 12rem;
+}

@@ -1,0 +1,273 @@
+<ng-template #modal let-modal>
+  <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
+
+  <div class="fixed inset-0 z-10 w-auto overflow-y-auto">
+    <div
+      class="flex min-h-full items-end justify-center text-center lg:items-center lg:p-0"
+    >
+      <div class="overflow-hidden rounded-lg bg-white text-left w-3/5">
+        <div
+          class="flex items-center justify-center border-spacing-0.5 p-5 shadow-sm"
+        >
+          <h2 class="text-slate-500 text-2xl">Novo Baralho</h2>
+        </div>
+        <form [formGroup]="form" onsubmit="return false" *ngIf="form">
+          <div class="grid grid-cols-2 overflow-y-hidden mt-5">
+            <label for="deckName" class="text-sm text-slate-800 ms-3"
+              >Nome do Baralho</label
+            >
+            <label for="deckName" class="text-sm text-slate-800 ms-3"
+              >Foto da Capa</label
+            >
+          </div>
+          <div class="flex mx-3 mb-5">
+            <input
+              formControlName="name"
+              type="text"
+              name="deckName"
+              id="deckName"
+              placeholder="Nome do Baralho"
+              class="form-input rounded-md w-full py-3 me-3"
+            />
+            <input
+              formControlName="cover"
+              type="text"
+              name="cover"
+              id="cover"
+              placeholder="Informe a url de uma imagem"
+              class="form-input rounded-md w-full py-3"
+            />
+          </div>
+          <label class="text-sm text-slate-800 mx-3 mt-3"
+            >Adicione cartas ao seu baralho</label
+          >
+          <div class="flex mx-3">
+            <input
+              type="text"
+              name="deckName"
+              id="deckName"
+              placeholder="Pesquisar..."
+              class="form-input rounded-md w-full py-3"
+              #deck
+            />
+            <button
+              (click)="search(deck)"
+              class="bg-blue-600 text-white rounded-lg w-32 mx-5"
+            >
+              Buscar
+            </button>
+          </div>
+        </form>
+        <p class="p-2 mt-2 ml-1">
+          Total selecionados: {{ this.cardsSelected?.length }}
+        </p>
+        <div class="grid grid-cols-2 mt-5 bg-slate-200 mx-3 rounded-t-md">
+          <h1
+            class="text-center font-semibold text-xl py-5 shadow-md border-r-2 border-slate-400"
+          >
+            Cards Disponiveis
+          </h1>
+          <h1 class="text-center font-semibold text-xl py-5 shadow-md">
+            Cards Selecionados
+          </h1>
+        </div>
+        <div
+          class="grid grid-cols-2 overflow-y-hidden h-96 max-h-96 pb-5 mx-3 rounded-b-md bg-slate-200"
+        >
+          <div
+            class="grid grid-cols-2 gap-4 overflow-y-scroll h-full max-h-96 px-5 pt-3 border-r-2 border-slate-400"
+          >
+            <div
+              class="group relative shadow-inner p-3 border-solid rounded-md bg-white h-auto"
+              *ngFor="let item of resultSearch; let id = index"
+              (click)="select(item, id)"
+            >
+              <div
+                class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md lg:aspect-none group-hover:opacity-75 lg:h-72"
+              >
+                <img
+                  [src]="item.images.large"
+                  class="h-full w-full object-cover object-center lg:h-full lg:w-full"
+                />
+              </div>
+              <div class="mt-4 flex justify-between">
+                <div
+                  class="flex z-20 justify-center text-center lg:items-center lg:p-0"
+                >
+                  <h3 class="text-sm font-medium text-gray-900">
+                    {{ item.name }}
+                  </h3>
+                </div>
+                <p class="text-sm font-normal text-gray-700">Cards: /60</p>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="grid grid-cols-2 gap-4 overflow-y-scroll h-full max-h-96 px-5 pt-3"
+          >
+            <div
+              class="group relative shadow-inner p-3 border-solid rounded-md bg-white h-auto"
+              *ngFor="let item of cardsSelected; let id = index"
+              (click)="toggleValidation(id, item.id)"
+            >
+              <div
+                class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md lg:aspect-none group-hover:opacity-75 lg:h-72"
+              >
+                <img
+                  [src]="item.images.large"
+                  class="h-full w-full object-center lg:h-full lg:w-full overflow-visible"
+                />
+              </div>
+
+              <div
+                class="absolute inset-0 z-10 bg-gray-300 bg-opacity-40 transition-opacity hidden"
+                [id]="'val' + id + item.id"
+              >
+                <div class="absolute inset-0 z-10 w-auto overflow-y-auto">
+                  <div
+                    class="flex min-h-full items-end justify-center text-center lg:items-center lg:p-0"
+                  >
+                    <button
+                      type="button"
+                      (click)="remove(id, item)"
+                      class="w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
+                    >
+                      Confirmar
+                    </button>
+                
+                    <button
+                      type="button"
+                      class="w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
+                    >
+                      Deletar
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-4 flex justify-between">
+                <div>
+                  <h3 class="text-sm font-medium text-gray-900">
+                    {{ item.name }}
+                  </h3>
+                </div>
+                <!-- <p class="text-sm font-normal text-gray-700">Cards: /60</p> -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+          <button
+            type="button"
+            class="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 sm:ml-3 sm:w-auto"
+            (click)="save(modal)"
+          >
+            Salvar
+          </button>
+          <button
+            type="button"
+            class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+            (click)="close(modal)"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- O ideal seria componentizar -->
+    <div
+      id="toast-danger"
+      class="hidden absolute flex items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800"
+      role="alert"
+    >
+      <div
+        class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-red-500 bg-red-100 rounded-lg dark:bg-red-800 dark:text-red-200"
+      >
+        <svg
+          class="w-5 h-5"
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
+          <path
+            d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 11.793a1 1 0 1 1-1.414 1.414L10 11.414l-2.293 2.293a1 1 0 0 1-1.414-1.414L8.586 10 6.293 7.707a1 1 0 0 1 1.414-1.414L10 8.586l2.293-2.293a1 1 0 0 1 1.414 1.414L11.414 10l2.293 2.293Z"
+          />
+        </svg>
+        <span class="sr-only">Error icon</span>
+      </div>
+      <div class="ms-3 text-sm font-normal">{{ mensagem }}</div>
+      <button
+        type="button"
+        class="ms-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center justify-center h-8 w-8 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700"
+        data-dismiss-target="#toast-danger"
+        aria-label="Close"
+      >
+        <span class="sr-only">Close</span>
+        <svg
+          class="w-3 h-3"
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 14 14"
+        >
+          <path
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+          />
+        </svg>
+      </button>
+    </div>
+    <div
+      id="toast-success"
+      class="hidden absolute flex items-center z-100 w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800"
+      role="alert"
+    >
+      <div
+        class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg dark:bg-green-800 dark:text-green-200"
+      >
+        <svg
+          class="w-5 h-5"
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
+          <path
+            d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"
+          />
+        </svg>
+        <span class="sr-only">Check icon</span>
+      </div>
+      <div class="ms-3 text-sm font-normal">{{ mensagem }}</div>
+      <button
+        type="button"
+        class="ms-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center justify-center h-8 w-8 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700"
+        data-dismiss-target="#toast-success"
+        aria-label="Close"
+      >
+        <span class="sr-only">Close</span>
+        <svg
+          class="w-3 h-3"
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 14 14"
+        >
+          <path
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+          />
+        </svg>
+      </button>
+    </div>
+  </div>
+</ng-template>
